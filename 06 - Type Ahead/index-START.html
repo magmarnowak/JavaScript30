@@ -16,7 +16,43 @@
   </form>
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+const cities = [];
+fetch(endpoint)
+  .then(response =>response.json())
+  .then(data => cities.push(...data))
 
+const input = document.querySelector('input.search');
+const suggestions = document.querySelector('ul.suggestions');
+input.addEventListener('input', showSuggestions);
+
+function typeaheadFilter(searchString) {
+  return cities.filter(city => city.city.toLowerCase().includes(searchString) || city.state.toLowerCase().includes(searchString))
+};
+
+function showSuggestions() {
+  if(this.value) {
+    const matches = typeaheadFilter(this.value.toLowerCase())
+    const matchesList = matches.map(city => {
+      const cityName = city.city.toLowerCase().includes(this.value.toLowerCase()) ? city.city.toLowerCase().replace(this.value.toLowerCase(), `<span class="hl">${this.value.toLowerCase()}</span>`): city.city;
+      const stateName = city.state.toLowerCase().includes(this.value.toLowerCase()) ? city.state.toLowerCase().replace(this.value.toLowerCase(), `<span class="hl">${this.value.toLowerCase()}</span>`): city.state;
+      return(
+      `
+        <li>
+          <span class="name">${cityName}, ${stateName}</span>
+          <span class="population">${numberWithCommas(city.population)}</span>
+        </li>
+      `);
+    }).join('');
+    suggestions.innerHTML = matchesList;
+  } else {
+    suggestions.innerHTML = `<li>Filter for a city</li>
+      <li>or a state</li>`
+  }
+};
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 </script>
 </body>
 </html>

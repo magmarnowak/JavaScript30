@@ -7,6 +7,15 @@
 </head>
 <body>
 <script>
+  const pushedKeys = [];
+  const easterEgg = 'wesbos';
+  window.addEventListener('keyup', (e) => {
+    pushedKeys.push(e.key);
+    pushedKeys.splice(-easterEgg.length - 1, pushedKeys.length - easterEgg.length)
+    if (pushedKeys.join('').includes(easterEgg)) {
+      cornify_add();
+    }
+  })
 </script>
 </body>
 </html>
